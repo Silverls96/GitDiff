@@ -1,1 +1,3 @@
 *.diff
+venv/
+.conda
