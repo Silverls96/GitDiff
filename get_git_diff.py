@@ -1,3 +1,4 @@
+from multiprocessing.spawn import prepare
 from xml.dom.minidom import Document
 import git
 import argparse
@@ -99,9 +100,23 @@ def write_to_file(filename, content):
     except Exception as e:
         print(f"Error writing to file {filename}: {e}")
 
+# def review_code_with_openai(diff):
+#     """Send the Git diff to OpenAI for a code review."""
+#     if not diff.strip():
+#         return "No changes detected."
 
+#     openai.api_key = os.getenv("OPENAI_API_KEY")
+#     prompt = f"Review the following Git diff for code quality, best practices, and possible improvements:\n\n{diff}"
 
-if __name__ == "__main__":
+#     response = openai.ChatCompletion.create(
+#         model="gpt-4",
+#         messages=[{"role": "system", "content": "You are a senior software engineer performing a code review."},
+#                   {"role": "user", "content": prompt}]
+#     )
+
+#     return response["choices"][0]["message"]["content"]
+
+def prepare_args():
     parser = argparse.ArgumentParser(
         description="Get git diffs. By default, shows local changes; use '--compare' to compare branches."
     )
@@ -120,6 +135,19 @@ if __name__ == "__main__":
                         help="File or directory pattern to exclude (can be used multiple times)")
 
     args = parser.parse_args()
+    return args
+
+# def main():
+#      try:
+#         diff = get_git_diff(args.repo_path, args.feature_branch if args.compare else None, args.target_branch)
+#         review = review_code_with_openai(diff)
+#         print("\n==== AI Code Review ====\n")
+#         print(review)
+#     except Exception as e:
+#         print(f"Error: {e}")
+
+if __name__ == "__main__":
+    args = prepare_args()
     
      # Determine the output file path: default is inside repo_path with filename "gitdiff"
     output_file = args.output if args.output else os.path.join(args.repo_path, "gitbranch.diff")
@@ -130,5 +158,6 @@ if __name__ == "__main__":
             print("For branch comparison, please provide a target branch using -t or --target_branch")
         else:
             get_branch_diff(args.repo_path, args.feature_branch, args.target_branch, output_file, args.exclude)
+
     else:
         get_git_diff(args.repo_path, output_file, args.exclude)
