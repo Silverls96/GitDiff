@@ -1,0 +1,1 @@
+run.bat <folder of git> -c -s <source> -t <target> -o <outputfile>
